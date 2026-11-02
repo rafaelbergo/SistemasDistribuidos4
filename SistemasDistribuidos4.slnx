@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Cluster.Client/Cluster.Client.csproj" />
+  <Project Path="Cluster.Contracts/Cluster.Contracts.csproj" />
+  <Project Path="Cluster.Node/Cluster.Node.csproj" />
+</Solution>
