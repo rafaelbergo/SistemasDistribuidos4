@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option csharp_namespace = "Cluster.Contracts";
+
+package cluster;
+
+
+service ClusterService {
+    rpc GetStatus (StatusRequest) returns (StatusResponse);
+}
+
+message StatusRequest {
+}
+
+message StatusResponse {
+    int32 node_id = 1;
+    string role = 2;
+    int32 term = 3;
+    int32 commit_index = 4;
+    int32 leader_id = 5;
+}
