@@ -1,19 +1,29 @@
 ﻿using Cluster.Contracts;
+using Cluster.Node.Models;
 using Grpc.Core;
 
 namespace Cluster.Node.Services;
 
 public class ClusterGrpcService : ClusterService.ClusterServiceBase
 {
+    private readonly NodeState _nodeState;
+
+    public ClusterGrpcService(NodeState nodeState)
+    {
+        _nodeState = nodeState;
+    }
+
     public override Task<StatusResponse> GetStatus(StatusRequest request, ServerCallContext context)
     {
-        return Task.FromResult(new StatusResponse
+        var response = new StatusResponse
         {
-            NodeId = 1,
-            Role = "FOLLOWER",
-            Term = 0,
-            CommitIndex = 0,
-            LeaderId = -1
-        });
+            NodeId = _nodeState.NodeId,
+            Role = _nodeState.Role.ToString().ToUpperInvariant(),
+            Term = _nodeState.CurrentTerm,
+            CommitIndex = _nodeState.CommitIndex,
+            LeaderId = _nodeState.LeaderId ?? -1
+        };
+
+        return Task.FromResult(response);
     }
 }

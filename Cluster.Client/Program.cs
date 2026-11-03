@@ -2,27 +2,36 @@
 using Cluster.Contracts;
 using Grpc.Net.Client;
 
-// Node address
-var address = "https://localhost:7196";
-
-// Create gRPC channel
-using var channel = GrpcChannel.ForAddress(address);
-
-// Create gRPC client
-var client = new ClusterService.ClusterServiceClient(channel);
-
-try
+var nodes = new Dictionary<int, string>
 {
-    var response = await client.GetStatusAsync(new StatusRequest());
+    { 1, "https://localhost:5001" },
+    { 2, "https://localhost:5002" },
+    { 3, "https://localhost:5003" },
+    { 4, "https://localhost:5004" }
+};
 
-    Console.WriteLine("Node Status:");
-    Console.WriteLine($"Node ID: {response.NodeId}");
-    Console.WriteLine($"Role: {response.Role}");
-    Console.WriteLine($"Term: {response.Term}");
-    Console.WriteLine($"Commit Index: {response.CommitIndex}");
-    Console.WriteLine($"Leader ID: {response.LeaderId}");
-}
-catch (Exception ex)
+foreach (var node in nodes)
 {
-    Console.WriteLine($"Error to communicate with node: {ex.Message}");
+    Console.WriteLine($"\nCheck Node {node.Key}");
+
+    try
+    {
+        using var channel = GrpcChannel.ForAddress(node.Value);
+
+        var client = new ClusterService.ClusterServiceClient(channel);
+
+        var response = await client.GetStatusAsync(
+            new StatusRequest()
+        );
+
+        Console.WriteLine($"Node ID: {response.NodeId}");
+        Console.WriteLine($"Role: {response.Role}");
+        Console.WriteLine($"Term: {response.Term}");
+        Console.WriteLine($"Commit Index: {response.CommitIndex}");
+        Console.WriteLine($"Leader ID: {response.LeaderId}");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error: {ex.Message}");
+    }
 }
